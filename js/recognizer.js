@@ -1,20 +1,21 @@
+"use strict"
+
 var final_transcript = '';
-var recognizing = false;
+var interim_transcript = '';
 var ignore_onend;
 var start_timestamp;
-var final_span, interim_span;
+
+
+var socket = io('http://127.0.0.1:4000');
 
 var recognition = new webkitSpeechRecognition();
+var message = document.getElementById('speaking')
+
 recognition.continuous = true;
 recognition.interimResults = true;
 
 recognition.onstart = function() {
-  recognizing = true;
-  console.log('info_speak_now');
-  final_span = document.getElementById('final_span')
-  interim_span = document.getElementById('interim_span')
-  final_span.innerHTML = '';
-  interim_span.innerHTML = '';
+  console.log('Starting..')
 };
 
 recognition.onerror = function(event) {
@@ -36,19 +37,7 @@ recognition.onerror = function(event) {
   }
 };
 
-recognition.onend = function() {
-  recognizing = false;
-  if (ignore_onend) {
-    return;
-  }
-  if (!final_transcript) {
-    console.log('info_start');
-    return;
-  }
-};
-
 recognition.onresult = function(event) {
-  var interim_transcript = '';
 
   for (var i = event.resultIndex; i < event.results.length; ++i) {
     if (event.results[i].isFinal) {
@@ -61,15 +50,15 @@ recognition.onresult = function(event) {
   }
 
   final_transcript = capitalize(final_transcript);
-  final_span.innerHTML = linebreak(final_transcript);
-  interim_span.innerHTML = linebreak(interim_transcript);
+
+  socket.emit('interim_transcript', { transcript: interim_transcript })
+  // socket.emmit('final_transcript', final_transcript)
 };
 
-var two_line = /\n\n/g;
-var one_line = /\n/g;
-function linebreak(s) {
-  return s.replace(two_line, '<p></p>').replace(one_line, '<br>');
-}
+socket.on('speaking', function(data) {
+  console.log(data)
+  message.innerHTML = data.message
+})
 
 var first_char = /\S/;
 function capitalize(s) {
@@ -77,3 +66,8 @@ function capitalize(s) {
 }
 
 recognition.start()
+
+
+
+
+
