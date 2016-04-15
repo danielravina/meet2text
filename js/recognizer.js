@@ -19,6 +19,7 @@ var $span;
 var $meetingNotes = $('.meeting-notes')
 var $messageContent = 0;
 var currentResultIndex;
+var $atendeelist = $('.atendee-list')
 
 recognition.onstart = function() {
   console.log("Starting")
@@ -46,9 +47,9 @@ socket.on('speaking', function(data) {
       avatar: 'http://placehold.it/50x50',
       time: moment().format("h:mm:ss a")
     }
-    var template = new EJS({url: '/js/templates/message.ejs'}).render(data)
+    var MessageTemplate = new EJS({url: '/js/templates/message.ejs'}).render(data)
 
-    $meetingNotes.append(template)
+    $meetingNotes.append(MessageTemplate)
 
     $messageContent = $meetingNotes.find('.content-body')
   }
@@ -67,5 +68,12 @@ socket.on('speaking', function(data) {
   currentResultIndex = data.resultIndex
 })
 
+socket.on('connect', function() {
+  socket.emit('clientJoined', { name: name })
+});
+
+socket.on('update-atendees', function(atendees) {
+  $atendeelist.html('<li>' + atendees.join('</li><li>'))
+});
 
 recognition.start()
