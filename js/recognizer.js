@@ -37,7 +37,10 @@ recognition.onresult = function(event) {
 
 socket.on('speaking', function(data) {
   if (data.newSpeaker || data.isFirst) {
-    $meetingNotes.append('<div class="message"><span class="speaker">'+ data.name +':</span><div class="content"></div></div>')
+    var template = new EJS({url: '/js/templates/message.ejs'}).render({name: data.name})
+    console.log(template)
+    $meetingNotes.append(template)
+
     $messageContent = $meetingNotes.find('.content')
   }
 
