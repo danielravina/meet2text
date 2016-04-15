@@ -1,0 +1,18 @@
+#page-title{
+  color: #31708f;
+  font-size: 60px;
+  font-family: Verdana, Georgia, sans-serif;
+}
+
+#background{
+  background-color: #d9edf7;
+}
+
+.panel-info > .panel-heading {
+  color: #FFFFFF;
+  background-color: #31708f;
+}
+
+.meeting-notes{
+	overflow-y: scroll
+}
