@@ -4,12 +4,16 @@ var final_transcript = '';
 var interim_transcript = '';
 var ignore_onend;
 var start_timestamp;
-
-
-var socket = io('http://127.0.0.1:4000');
+var speaker = '';
+var name = prompt("What's your name?")
+var currentSpeaking = '';
+var socket = io('http://192.168.148.74:4000');
 
 var recognition = new webkitSpeechRecognition();
 var message = document.getElementById('speaking')
+
+var messageBox = document.createElement('p')
+document.body.appendChild(messageBox);
 
 recognition.continuous = true;
 recognition.interimResults = true;
@@ -38,11 +42,12 @@ recognition.onerror = function(event) {
 };
 
 recognition.onresult = function(event) {
-
+  interim_transcript = '';
   for (var i = event.resultIndex; i < event.results.length; ++i) {
     if (event.results[i].isFinal) {
       console.log("final_transcript")
       final_transcript += event.results[i][0].transcript;
+
     } else {
       console.log("interim_transcript")
       interim_transcript += event.results[i][0].transcript;
@@ -51,13 +56,18 @@ recognition.onresult = function(event) {
 
   final_transcript = capitalize(final_transcript);
 
-  socket.emit('interim_transcript', { transcript: interim_transcript })
+  socket.emit('interim_transcript', { transcript: interim_transcript, name: name })
   // socket.emmit('final_transcript', final_transcript)
 };
 
 socket.on('speaking', function(data) {
-  console.log(data)
-  message.innerHTML = data.message
+  if (data.name != currentSpeaking) {
+    speaker = document.createElement('p')
+    speaker.innerHTML = data.name + ':'
+    document.body.appendChild(speaker);
+    currentSpeaking = speaker.innerHTML
+  }
+  messageBox.innerHTML = data.message
 })
 
 var first_char = /\S/;

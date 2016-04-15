@@ -4,8 +4,6 @@ io.on('connection', function (socket) {
   console.log('user connection')
 
   socket.on('interim_transcript', function(message) {
-    // console.log(message.transcript);
-    socket.emit('speaking', { message: message.transcript })
+    socket.emit('speaking', { message: message.transcript, name: message.name })
   })
-// io.emit('tweet', tweet);
-});
+})
