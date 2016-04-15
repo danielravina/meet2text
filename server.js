@@ -2,11 +2,20 @@ var io = require('socket.io')(4000);
 
 var currentSpeaker = ''
 var isFirst = true
+var atendees = []
+
 io.on('connection', function (socket) {
-  console.log('user connection')
+  var sendMessage = function(name ,data) {
+    socket.broadcast.emit(name, data)
+    socket.emit(name, data)
+  }
+
+  socket.on('clientJoined', function(client){
+    atendees.push(client.name)
+    sendMessage('update-atendees', atendees)
+  })
 
   socket.on('interim_transcript', function(message) {
-    console.log(message)
     var message = {
       message: message.transcript,
       name: message.name,
@@ -14,9 +23,9 @@ io.on('connection', function (socket) {
       isFirst: isFirst,
       resultIndex: message.resultIndex
     }
-    socket.broadcast.emit('speaking', message)
-    socket.emit('speaking', message)
+    sendMessage('speaking' ,message)
     currentSpeaker = message.name
     isFirst = false
   })
 })
+
