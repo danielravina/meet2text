@@ -1,5 +1,9 @@
 "use strict"
 
+var avatars = {
+  "doc": 'img/doc.png',
+  "jason": 'img/',
+}
 var interim_transcript = '';
 
 var name = prompt("What's your name?")
@@ -37,19 +41,28 @@ recognition.onresult = function(event) {
 
 socket.on('speaking', function(data) {
   if (data.newSpeaker || data.isFirst) {
-    var template = new EJS({url: '/js/templates/message.ejs'}).render({name: data.name})
-    console.log(template)
+    var data = {
+      name: data.name,
+      avatar: 'http://placehold.it/150x150',
+      time: moment().format("h:mm:ss a")
+    }
+    var template = new EJS({url: '/js/templates/message.ejs'}).render(data)
+
     $meetingNotes.append(template)
 
-    $messageContent = $meetingNotes.find('.content')
+    $messageContent = $meetingNotes.find('.content-body')
   }
 
   if($messageContent) {
     if (currentResultIndex != data.resultIndex) {
-      $messageContent.append('<span></span>')
-      $span = $messageContent.find('span').last()
+      if(data.message) {
+        $messageContent.append('<span></span>')
+        $span = $messageContent.find('span').last()
+      }
     }
-    $span.html(data.message)
+    if (data.message && data.message.length > 0) {
+      $span.html(data.message)
+    }
   }
   currentResultIndex = data.resultIndex
 })
