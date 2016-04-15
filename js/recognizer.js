@@ -43,7 +43,7 @@ socket.on('speaking', function(data) {
   if (data.newSpeaker || data.isFirst) {
     var data = {
       name: data.name,
-      avatar: 'http://placehold.it/150x150',
+      avatar: 'http://placehold.it/50x50',
       time: moment().format("h:mm:ss a")
     }
     var template = new EJS({url: '/js/templates/message.ejs'}).render(data)
