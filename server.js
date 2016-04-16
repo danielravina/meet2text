@@ -11,8 +11,9 @@ io.on('connection', function (socket) {
   }
 
   socket.on('clientJoined', function(client){
+    console.log('clientJoined welcome!', client)
     atendees.push(client.name)
-    sendMessage('update-atendees', atendees)
+    sendMessage('update-atendees' , atendees)
   })
 
   socket.on('interim_transcript', function(message) {
@@ -21,7 +22,8 @@ io.on('connection', function (socket) {
       name: message.name,
       newSpeaker: (currentSpeaker != message.name),
       isFirst: isFirst,
-      resultIndex: message.resultIndex
+      resultIndex: message.resultIndex,
+      avatar: message.avatar
     }
     sendMessage('speaking' ,message)
     currentSpeaker = message.name

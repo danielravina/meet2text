@@ -1,10 +1,14 @@
 "use strict"
 
 var avatars = {
-  "doc": 'img/doc.png',
-  "jason": 'img/',
+  "doc": 'assets/img/doc_photo.jpeg',
+  "jason": 'assets/img/jason_photo.jpeg',
+  "matias": 'assets/img/matias_photo.jpeg'
 }
 var interim_transcript = '';
+var defaultAvatar = 'assets/img/default_photo.png';
+
+EJS.config({cache: false});
 
 var name = prompt("What's your name?")
 var currentSpeaking = '';
@@ -36,7 +40,7 @@ recognition.onresult = function(event) {
     interim_transcript += event.results[i][0].transcript;
   }
 
-  socket.emit('interim_transcript', { transcript: interim_transcript, name: name, resultIndex: event.resultIndex})
+  socket.emit('interim_transcript', { transcript: interim_transcript, name: name, resultIndex: event.resultIndex, avatar: avatars[name]})
 
 };
 
@@ -44,8 +48,8 @@ socket.on('speaking', function(data) {
   if (data.newSpeaker || data.isFirst) {
     var data = {
       name: data.name,
-      avatar: 'http://placehold.it/50x50',
-      time: moment().format("h:mm:ss a")
+      avatar: (data.avatar || defaultAvatar),
+      time: moment().format("h:mm a")
     }
     var MessageTemplate = new EJS({url: '/js/templates/message.ejs'}).render(data)
 
@@ -56,7 +60,7 @@ socket.on('speaking', function(data) {
 
   if($messageContent) {
     if (currentResultIndex != data.resultIndex) {
-      if(data.message) {
+      if(data.message && data.message.length > 0) {
         $messageContent.append('<span></span>')
         $span = $messageContent.find('span').last()
       }

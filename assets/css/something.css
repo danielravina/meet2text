@@ -16,3 +16,17 @@
 .meeting-notes{
 	overflow-y: scroll
 }
+
+.message {
+  padding: 13px;
+}
+
+.avatar-wrapper {
+  float: left !important;
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.time {
+  color: #999;
+}
